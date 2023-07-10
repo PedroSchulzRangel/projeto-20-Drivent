@@ -1,4 +1,5 @@
 import { prisma } from '@/config';
+import { Prisma } from "@prisma/client";
 
 async function getTicketTypes(){
     return await prisma.ticketType.findMany();
@@ -28,11 +29,26 @@ async function getPaymentInfoFromDB(ticketId: number){
     });
 }
 
+async function createTicket(data: Prisma.TicketUncheckedCreateInput){
+    return await prisma.ticket.create({
+        data
+    });
+}
+
+async function findTicket(ticketTypeId: number){
+    return await prisma.ticket.findFirst({
+        where: {
+            ticketTypeId
+        }
+    });
+} 
 const ticketsRepository = {
     getTicketTypes,
     getUserTicket,
     getUserTicketType,
-    getPaymentInfoFromDB
+    getPaymentInfoFromDB,
+    createTicket,
+    findTicket
 };
 
 export default ticketsRepository;

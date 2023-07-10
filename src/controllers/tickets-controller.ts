@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import ticketsService from "@/services/tickets-service";
+import {ticketBody} from "@/protocols";
 
 export async function getTicketsTypes(req: Request, res: Response){
     try{
@@ -52,6 +53,25 @@ export async function getPaymentInfo(req: Request, res: Response){
         }
         if(error.name === "UnauthorizedError"){
             return res.status(httpStatus.UNAUTHORIZED).send(error.message);
+        }
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+}
+
+export async function postTickets(req: Request, res: Response){
+    
+    const {authorization} = req.headers;
+
+    const token = authorization.replace("Bearer ","");
+
+    try{
+        const ticket = await ticketsService.postTickets(req.body, token);
+
+        res.status(httpStatus.CREATED).send(ticket);
+        
+    } catch(error){
+        if(error.name === "NotFoundError"){
+            return res.status(httpStatus.NOT_FOUND).send(error.message);
         }
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
     }
