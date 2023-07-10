@@ -1,5 +1,6 @@
 import { prisma } from '@/config';
 import { Prisma } from "@prisma/client";
+import * as querystring from "querystring";
 
 async function getTicketTypes(){
     return await prisma.ticketType.findMany();
@@ -21,10 +22,10 @@ async function getUserTicketType(ticketTypeId: number){
     });
 }
 
-async function getPaymentInfoFromDB(ticketId: number){
+async function getPaymentInfoFromDB(ticketId: string | querystring.ParsedUrlQueryInput | string[] | querystring.ParsedUrlQueryInput[]){
     return await prisma.payment.findFirst({
         where:{
-            ticketId
+            ticketId: Number(ticketId)
         }
     });
 }

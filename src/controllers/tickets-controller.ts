@@ -39,13 +39,11 @@ export async function getPaymentInfo(req: Request, res: Response){
 
     const token = authorization.replace("Bearer ","");
     
-    const {ticketId} = req.query as string;
-
-    const numTicketId = parseInt(ticketId);
+    const {ticketId} = req.query;
 
     if(!ticketId) return res.sendStatus(httpStatus.BAD_REQUEST);
 
-    try{ const paymentInfo = await ticketsService.getTicketPayment(numTicketId, token);
+    try{ const paymentInfo = await ticketsService.getTicketPayment(ticketId, token);
     
     } catch (error){
         if(error.name === "NotFoundError"){

@@ -3,8 +3,8 @@ import sessionRepository from "@/repositories/session-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import {notFoundError} from "@/errors/not-found-error";
 import {unauthorizedError} from "@/errors/unauthorized-error";
-import { ticketBody } from "@/protocols";
 import { Prisma } from "@prisma/client";
+import * as querystring from "querystring";
 
 async function getTickets(){
     return await ticketsRepository.getTicketTypes();
@@ -41,7 +41,7 @@ async function getUserTicket(token: string){
     };
 }
 
-async function getTicketPayment(ticketId: number, token: string){
+async function getTicketquerystringPayment(ticketId: string | querystring.ParsedUrlQueryInput | string[] | querystring.ParsedUrlQueryInput[], token: string){
 
     const session = await sessionRepository.getSessionByToken(token);
 
@@ -57,7 +57,7 @@ async function getTicketPayment(ticketId: number, token: string){
 
     if(!ticket) throw notFoundError()
 
-    if(ticket.id !== ticketId) throw unauthorizedError(); 
+    if((ticket.id).toFixed(0) !== ticketId) throw unauthorizedError(); 
 
     const paymentInfo = await ticketsRepository.getPaymentInfoFromDB(ticketId);
 
