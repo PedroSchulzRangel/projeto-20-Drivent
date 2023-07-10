@@ -20,10 +20,19 @@ async function getUserTicketType(ticketTypeId: number){
     });
 }
 
+async function getPaymentInfoFromDB(ticketId: number){
+    return await prisma.payment.findFirst({
+        where:{
+            ticketId
+        }
+    });
+}
+
 const ticketsRepository = {
     getTicketTypes,
     getUserTicket,
-    getUserTicketType
+    getUserTicketType,
+    getPaymentInfoFromDB
 };
 
 export default ticketsRepository;
