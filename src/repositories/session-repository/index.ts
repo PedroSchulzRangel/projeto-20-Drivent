@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 import { prisma } from '@/config';
 
 async function create(data: Prisma.SessionUncheckedCreateInput) {
@@ -6,9 +6,17 @@ async function create(data: Prisma.SessionUncheckedCreateInput) {
     data,
   });
 }
+async function getSessionByToken(token: string){
+return await prisma.session.findFirst({
+  where:{
+    token
+  }
+});
+}
 
 const sessionRepository = {
   create,
+  getSessionByToken
 };
 
 export default sessionRepository;
