@@ -41,7 +41,7 @@ async function getUserTicket(token: string){
     };
 }
 
-async function getTicketquerystringPayment(ticketId: string | querystring.ParsedUrlQueryInput | string[] | querystring.ParsedUrlQueryInput[], token: string){
+async function getTicketPayment(ticketId: string | querystring.ParsedUrlQueryInput | string[] | querystring.ParsedUrlQueryInput[], token: string){
 
     const session = await sessionRepository.getSessionByToken(token);
 
