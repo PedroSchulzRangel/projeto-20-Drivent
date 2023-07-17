@@ -39,7 +39,7 @@ export async function getPaymentInfo(req: Request, res: Response){
 
     const token = authorization.replace("Bearer ","");
     
-    const {ticketId} = req.query;
+    const ticketId = Number(req.query.ticketId);
 
     if(!ticketId) return res.sendStatus(httpStatus.BAD_REQUEST);
 
