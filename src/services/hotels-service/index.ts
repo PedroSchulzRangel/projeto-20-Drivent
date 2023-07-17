@@ -1,11 +1,12 @@
 import sessionRepository from "@/repositories/session-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
-import { notFoundError } from "@/errors";
+import { notFoundError, requestError } from "@/errors";
 import ticketsRepository from "@/repositories/tickets-repository";
 import { paymentRequiredError } from "@/errors/payment-required-error";
 import hotelsRepository from "../../repositories/hotels-repository";
+import httpStatus from "http-status";
 
-async function findAllHotels(token: string){
+async function businessRules(token: string){
 
     const session = await sessionRepository.getSessionByToken(token);
 
@@ -34,16 +35,32 @@ async function findAllHotels(token: string){
     const {isRemote} = ticketType;
 
     if(!includesHotel || isRemote) throw paymentRequiredError()
+}
 
-    const hotel = await hotelsRepository.findAllHotels();
+async function findAllHotels(token: string){
 
-    if(!hotel) throw notFoundError();
+    await businessRules(token);
+
+    const hotels = await hotelsRepository.findAllHotels();
+
+    if(!hotels) throw notFoundError();
+
+    return hotels;
+}
+
+async function findHotelById(token: string, hotelId: number){
+    
+    await businessRules(token);
+
+    const hotel = await hotelsRepository.findHotelWithRoomsById(hotelId);
+
+    if(!hotel) throw requestError(httpStatus.BAD_REQUEST,"bad request error")
 
     return hotel;
 }
-
 const hotelsService = {
-    findAllHotels
+    findAllHotels,
+    findHotelById
 };
 
 export default hotelsService;
