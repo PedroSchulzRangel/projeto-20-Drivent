@@ -9,8 +9,8 @@ import { createEnrollmentWithAddress,
     createTicket, 
     createUser, 
     createHotel,
-    createRoom} from '../factories';
-import { createBooking } from '../factories/booking-factory';
+    createRoom,
+    createBooking} from '../factories';
 
 beforeAll(async () => {
     await init();
