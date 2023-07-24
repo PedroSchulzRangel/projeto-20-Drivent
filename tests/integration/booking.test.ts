@@ -89,3 +89,148 @@ describe("GET /booking - with valid authentication credentials",() => {
         expect(response.status).toBe(httpStatus.NOT_FOUND);
     })
 })
+
+describe("POST /booking - authentication errors", () => {
+    it('should respond with status 401 if no token is given', async () => {
+        const response = await server.post('/booking');
+    
+        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      });
+    
+      it('should respond with status 401 if given token is not valid', async () => {
+        const token = faker.lorem.word();
+    
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`);
+    
+        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      });
+    
+      it('should respond with status 401 if there is no session for given token', async () => {
+        const userWithoutSession = await createUser();
+        const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+    
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`);
+    
+        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      });
+});
+
+describe("POST /booking - with valid authentication credentials", () => {
+    it('should respond with status 400 when body is not present', async () => {
+        const token = await generateValidToken();
+  
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`);
+  
+        expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      });
+      
+      it('should respond with status 400 when body is not valid', async () => {
+        const token = await generateValidToken();
+        const body = { [faker.lorem.word()]: faker.lorem.word() };
+  
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
+  
+        expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      });
+});
+
+describe("POST /booking - when body is valid", () => {
+
+    it('should respond with status code 200 and send bookingId', async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollmentWithAdress = await createEnrollmentWithAddress(user);
+        const ticketTypeWithHotel = await createTicketType(true,false);
+        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
+        const hotel = await createHotel();
+        const room = await createRoom(hotel.id);
+
+        const generateValidBody = () => ({
+            roomId: room.id,
+        });
+
+        const body = generateValidBody();
+
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
+
+        expect(response.status).toBe(httpStatus.OK);
+
+    })
+
+    it('should respond with status code 404 when roomId does not exist', async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollmentWithAdress = await createEnrollmentWithAddress(user);
+        const ticketTypeWithHotel = await createTicketType(true,false);
+        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
+        
+        const generateFakeBody = () => ({
+            roomId: faker.datatype.bigInt(),
+        });
+
+        const body = generateFakeBody();
+
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
+
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+    })
+
+    it("should respond with status code 403 when room is fully booked", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollmentWithAdress = await createEnrollmentWithAddress(user);
+        const ticketTypeWithHotel = await createTicketType(true,false);
+        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
+        const hotel = await createHotel();
+        const room = await createRoom(hotel.id,0);
+
+        const generateValidBody = () => ({
+            roomId: room.id,
+        });
+
+        const body = generateValidBody();
+
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
+
+        expect(response.status).toBe(httpStatus.FORBIDDEN);
+    })
+    it("should respond with status code 403 when ticket type is remote",async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollmentWithAdress = await createEnrollmentWithAddress(user);
+        const ticketTypeWithHotel = await createTicketType(false,true);
+        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
+        const hotel = await createHotel();
+        const room = await createRoom(hotel.id);
+
+        const generateValidBody = () => ({
+            roomId: room.id,
+        });
+
+        const body = generateValidBody();
+
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
+
+        expect(response.status).toBe(httpStatus.FORBIDDEN);
+    })
+
+    it("should respond with status code 403 when ticket was not paid",async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollmentWithAdress = await createEnrollmentWithAddress(user);
+        const ticketTypeWithHotel = await createTicketType(true,false);
+        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "RESERVED");
+        const hotel = await createHotel();
+        const room = await createRoom(hotel.id);
+
+        const generateValidBody = () => ({
+            roomId: room.id,
+        });
+
+        const body = generateValidBody();
+
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
+
+        expect(response.status).toBe(httpStatus.FORBIDDEN);
+    })
+})
