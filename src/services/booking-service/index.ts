@@ -21,9 +21,11 @@ async function createBooking(userId: number, roomId: number){
     
     const room = await roomRepository.findRoomById(roomId);
 
+    const bookings = await bookingRepository.findBookingsByRoomId(roomId);
+
     if(!room) throw notFoundError();
 
-    if(room.capacity <= 0) throw forbiddenError();
+    if(room.capacity <= bookings.length) throw forbiddenError();
 
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
 
@@ -43,8 +45,6 @@ async function createBooking(userId: number, roomId: number){
     }
         const booking = await bookingRepository.createBooking(userId, roomId);
 
-        await roomRepository.updateRoomCapacity(roomId, room.capacity);
-
         return booking.id;
 }
 
@@ -62,15 +62,13 @@ async function updateBooking(bookingId: number, roomId: number, userId: number){
 
     const room = await roomRepository.findRoomById(roomId);
 
+    const bookings = await bookingRepository.findBookingsByRoomId(roomId);
+
     if(!room) throw notFoundError();
 
-    if(room.capacity <= 0) throw forbiddenError();
+    if(room.capacity <= bookings.length) throw forbiddenError();
 
     await bookingRepository.updateBooking(bookingId, roomId);
-
-    await roomRepository.increaseRoomCapacity(oldRoomId, oldRoomCapacity);
-
-    await roomRepository.updateRoomCapacity(room.id, room.capacity);
 
     return bookingId;
 }

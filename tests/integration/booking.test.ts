@@ -165,7 +165,7 @@ describe("POST /booking - when body is valid", () => {
         await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
         
         const generateFakeBody = () => ({
-            roomId: faker.datatype.bigInt(),
+            roomId: -1,
         });
 
         const body = generateFakeBody();
@@ -179,10 +179,10 @@ describe("POST /booking - when body is valid", () => {
         const user = await createUser();
         const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
-        const ticketTypeWithHotel = await createTicketType(true,false);
-        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
+        const ticketTypeWithHotel = await createTicketType(false, true);
+        await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, 'PAID');
         const hotel = await createHotel();
-        const room = await createRoom(hotel.id,0);
+        const room = await createRoom(hotel.id);
 
         const generateValidBody = () => ({
             roomId: room.id,
@@ -193,7 +193,7 @@ describe("POST /booking - when body is valid", () => {
         const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
 
         expect(response.status).toBe(httpStatus.FORBIDDEN);
-    })
+  });
     it("should respond with status code 403 when ticket type is remote",async () => {
         const user = await createUser();
         const token = await generateValidToken(user);
@@ -233,4 +233,5 @@ describe("POST /booking - when body is valid", () => {
 
         expect(response.status).toBe(httpStatus.FORBIDDEN);
     })
+
 })
