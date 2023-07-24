@@ -15,9 +15,16 @@ async function updateRoomCapacity(roomId: number, roomCapacity: number){
     });
 }
 
+async function increaseRoomCapacity(roomId: number, roomCapacity: number){
+    return prisma.room.update({
+        where: { id: roomId },
+        data:{ capacity: roomCapacity+1}
+    });
+}
 const roomRepository = {
     findRoomById,
-    updateRoomCapacity
+    updateRoomCapacity,
+    increaseRoomCapacity
 }
 
 export default roomRepository;
