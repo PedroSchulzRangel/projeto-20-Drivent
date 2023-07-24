@@ -49,7 +49,7 @@ describe('GET /hotels authentication errors', () => {
 describe('GET /hotels when token is valid', () => {
     it('should respond with status 200 when user have an enrollment with paid ticket and hotel included', async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketTypeWithHotel = await createTicketType(true);
         await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
@@ -63,7 +63,7 @@ describe('GET /hotels when token is valid', () => {
     it("should respond with status 404 when user don't have an enrollment", async () => {
 
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.NOT_FOUND);
@@ -72,7 +72,7 @@ describe('GET /hotels when token is valid', () => {
 
     it("should respond with status 404 when user don't have a ticket", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
 
@@ -82,7 +82,7 @@ describe('GET /hotels when token is valid', () => {
 
     it("should respond with status 404 when user did not select a hotel", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketTypeWithHotel = await createTicketType(true);
 
@@ -95,7 +95,7 @@ describe('GET /hotels when token is valid', () => {
     })
     it("should respond with status 402 when user have an unpaid ticket", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketType();
         await createTicket(enrollmentWithAdress.id, ticketType.id, "RESERVED");
@@ -153,7 +153,7 @@ describe('GET /hotels/:hotelId authentication errors', () => {
 describe('GET /hotels/:hotelId when token is valid', () => {
     it('should respond with status 200 when user have an enrollment with paid ticket and hotel included', async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketTypeWithHotel = await createTicketType(true);
         await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
@@ -187,7 +187,7 @@ describe('GET /hotels/:hotelId when token is valid', () => {
     it("should respond with status 404 when user don't have an enrollment", async () => {
 
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const hotel = await createHotel();
         await createRoom(hotel.id);
 
@@ -199,7 +199,7 @@ describe('GET /hotels/:hotelId when token is valid', () => {
 
     it("should respond with status 404 when user don't have a ticket", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const hotel = await createHotel();
         await createRoom(hotel.id);
@@ -211,7 +211,7 @@ describe('GET /hotels/:hotelId when token is valid', () => {
 
     it("should respond with status 404 when hotelId is not valid", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketTypeWithHotel = await createTicketType(true);
         await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
@@ -225,7 +225,7 @@ describe('GET /hotels/:hotelId when token is valid', () => {
     })
     it("should respond with status 402 when user have an unpaid ticket", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketType();
         await createTicket(enrollmentWithAdress.id, ticketType.id, "RESERVED");

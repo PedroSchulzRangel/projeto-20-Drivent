@@ -51,7 +51,7 @@ describe("GET /booking - authentication errors",() => {
 describe("GET /booking - with valid authentication credentials",() => {
     it("Should respond with status 200 and with a reservation object", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketTypeWithHotel = await createTicketType(true,false);
         await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
@@ -70,7 +70,7 @@ describe("GET /booking - with valid authentication credentials",() => {
 
     it("Should respond with status 404 when user doesn't have a reservation", async () => {
         const user = await createUser();
-        const token = generateValidToken(user);
+        const token = await generateValidToken(user);
         const enrollmentWithAdress = await createEnrollmentWithAddress(user);
         const ticketTypeWithHotel = await createTicketType(true,false);
         await createTicket(enrollmentWithAdress.id, ticketTypeWithHotel.id, "PAID");
