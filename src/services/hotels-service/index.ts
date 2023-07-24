@@ -43,7 +43,7 @@ async function findAllHotels(token: string){
 
     const hotels = await hotelsRepository.findAllHotels();
 
-    if(!hotels) throw notFoundError();
+    if(hotels.length === 0) throw notFoundError();
 
     return hotels;
 }
@@ -54,7 +54,7 @@ async function findHotelById(token: string, hotelId: number){
 
     const hotel = await hotelsRepository.findHotelWithRoomsById(hotelId);
 
-    if(!hotel) throw requestError(httpStatus.BAD_REQUEST,"bad request error")
+    if(!hotel) throw notFoundError();
 
     return hotel;
 }
