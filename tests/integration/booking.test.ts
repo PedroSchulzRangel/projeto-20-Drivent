@@ -64,7 +64,14 @@ describe("GET /booking - with valid authentication credentials",() => {
         expect(response.status).toBe(httpStatus.OK);
         expect(response.body).toEqual({
             id: booking.id,
-            Room: room
+            Room:{
+                id: room.id,
+                name: room.name,
+                hotelId: room.hotelId,
+                capacity: room.capacity,
+                createdAt: room.createdAt.toISOString(),
+                updatedAt: room.updatedAt.toISOString(),
+            },
         });
     })
 
