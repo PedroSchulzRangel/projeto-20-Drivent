@@ -73,9 +73,9 @@ describe('GET /hotels when token is valid', () => {
                 hotelId: hotel.id,
                 createdAt: room.createdAt.toISOString(),
                 updatedAt: room.updatedAt.toISOString(),
-              },
-            ],
-          })
+              }
+            ]
+          });
     })
     it("should respond with status 404 when user don't have an enrollment", async () => {
 
@@ -180,25 +180,23 @@ describe('GET /hotels/:hotelId when token is valid', () => {
         const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.OK);
-        expect(response.body).toEqual(
-            expect.objectContaining({
-                id: expect.any(Number),
-                name: expect.any(String),
-                image: expect.any(String),
-                createdAt: expect.any(timeStamp),
-                updatedAt: expect.any(timeStamp),
+        expect(response.body).toEqual({
+                id: hotel.id,
+                name: hotel.name,
+                image: hotel.image,
+                createdAt: hotel.createdAt.toISOString(),
+                updatedAt: hotel.updatedAt.toISOString(),
                 Rooms: [
                     {
-                        id: expect.any(Number),
-                        name: expect.any(String),
-                        capacity: expect.any(Number),
-                        hotelId: expect.any(Number),
-                        createdAt: expect.any(timeStamp),
-                        updatedAt: expect.any(timeStamp)
+                        id: room.id,
+                        name: room.name,
+                        capacity: room.capacity,
+                        hotelId: room.hotelId,
+                        createdAt: room.createdAt.toISOString(),
+                        updatedAt: room.updatedAt.toISOString(),
                     }
                 ]
             })
-        )
     })
     it("should respond with status 404 when user don't have an enrollment", async () => {
 
