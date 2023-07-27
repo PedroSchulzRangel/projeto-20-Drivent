@@ -59,23 +59,15 @@ describe('GET /hotels when token is valid', () => {
         const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.OK);
-        expect(response.body).toEqual({
+        expect(response.body).toEqual([
+            {
             id: hotel.id,
             name: hotel.name,
             image: hotel.image,
             createdAt: hotel.createdAt.toISOString(),
             updatedAt: hotel.updatedAt.toISOString(),
-            Rooms: [
-              {
-                id: room.id,
-                name: room.name,
-                capacity: room.capacity,
-                hotelId: hotel.id,
-                createdAt: room.createdAt.toISOString(),
-                updatedAt: room.updatedAt.toISOString(),
-              }
-            ]
-          });
+          },
+        ]);
     })
     it("should respond with status 404 when user don't have an enrollment", async () => {
 
